@@ -7,6 +7,8 @@ import connectDB from "./lib/db.js";
 import errorHandler from "./middleware/errorHandler.js";
 
 import authRoutes from "./routes/authRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
 
 await connectDB();
 
@@ -27,6 +29,8 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/projects", projectRoutes);
+app.use("/api/projects/:projectId/tasks", taskRoutes);
 
 app.use((req, res) => {
     res.status(404).json({ success: false, error: { message: "Not found" } });

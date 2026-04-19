@@ -1,18 +1,32 @@
-import { NavLink } from "react-router-dom";
-import { Plus, Inbox, Folder } from "lucide-react";
+import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Plus, Inbox, Folder, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useAuthStore } from "@/store/authStore";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAuthStore } from "@/store/authStore";
+import { useProjects } from "@/hooks/useProjects";
+import NewProjectDialog from "./NewProjectDialog";
 
-const PLACEHOLDER_PROJECTS = [];
-
-const Sidebar = ({ collapsed = false, onNewProject }) => {
+const Sidebar = ({ collapsed = false }) => {
     const user = useAuthStore((s) => s.user);
+    const navigate = useNavigate();
+    const [dialogOpen, setDialogOpen] = useState(false);
+
+    const { data: projects = [], isLoading, isError } = useProjects();
+
     const initials =
         (user?.firstName?.[0] || "") + (user?.lastName?.[0] || "") || user?.email?.[0]?.toUpperCase() || "U";
+
+    const linkClass = ({ isActive }) =>
+        cn(
+            "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+            isActive
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+        );
 
     return (
         <aside
@@ -29,18 +43,7 @@ const Sidebar = ({ collapsed = false, onNewProject }) => {
             <Separator />
 
             <nav className="flex-1 overflow-y-auto p-2">
-                <NavLink
-                    to="/dashboard"
-                    end
-                    className={({ isActive }) =>
-                        cn(
-                            "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-                            isActive
-                                ? "bg-accent text-accent-foreground"
-                                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                        )
-                    }
-                >
+                <NavLink to="/dashboard" end className={linkClass}>
                     <Inbox className="h-4 w-4 shrink-0" />
                     {!collapsed && <span>Inbox</span>}
                 </NavLink>
@@ -55,34 +58,38 @@ const Sidebar = ({ collapsed = false, onNewProject }) => {
                         variant="ghost"
                         size="icon"
                         className="h-6 w-6"
-                        onClick={onNewProject}
+                        onClick={() => setDialogOpen(true)}
                         aria-label="New project"
                     >
                         <Plus className="h-4 w-4" />
                     </Button>
                 </div>
 
-                {PLACEHOLDER_PROJECTS.length === 0 && !collapsed && (
+                {isLoading && !collapsed && (
+                    <p className="flex items-center gap-2 px-3 py-2 text-xs text-muted-foreground">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Loading projects...
+                    </p>
+                )}
+
+                {isError && !collapsed && (
+                    <p className="px-3 py-2 text-xs text-destructive">Failed to load projects</p>
+                )}
+
+                {!isLoading && projects.length === 0 && !collapsed && (
                     <p className="px-3 py-2 text-xs text-muted-foreground">
                         No projects yet. Click + to create one.
                     </p>
                 )}
 
-                {PLACEHOLDER_PROJECTS.map((project) => (
+                {projects.map((project) => (
                     <NavLink
-                        key={project.id}
-                        to={`/dashboard/projects/${project.id}`}
-                        className={({ isActive }) =>
-                            cn(
-                                "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-                                isActive
-                                    ? "bg-accent text-accent-foreground"
-                                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                            )
-                        }
+                        key={project._id || project.id}
+                        to={`/dashboard/projects/${project._id || project.id}`}
+                        className={linkClass}
                     >
                         <Folder className="h-4 w-4 shrink-0" />
-                        {!collapsed && <span className="truncate">{project.name}</span>}
+                        {!collapsed && <span className="truncate">{project.title}</span>}
                     </NavLink>
                 ))}
             </nav>
@@ -102,6 +109,14 @@ const Sidebar = ({ collapsed = false, onNewProject }) => {
                     </div>
                 )}
             </div>
+
+            <NewProjectDialog
+                open={dialogOpen}
+                onOpenChange={setDialogOpen}
+                onCreated={(project) =>
+                    navigate(`/dashboard/projects/${project._id || project.id}`)
+                }
+            />
         </aside>
     );
 };
