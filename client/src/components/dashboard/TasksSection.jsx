@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, Plus, Pencil, Trash2, Calendar, User as UserIcon } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Calendar, User as UserIcon, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useTasks, useUpdateTask, useDeleteTask } from "@/hooks/useTasks";
 import TaskDialog from "./TaskDialog";
+import AIGenerateTasksDialog from "./AIGenerateTasksDialog";
 
 const STATUS_COLUMNS = [
     { id: "Todo", label: "To do" },
@@ -132,6 +133,7 @@ const TasksSection = ({ project, canEdit }) => {
     const deleteMutation = useDeleteTask(projectId);
 
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [aiDialogOpen, setAiDialogOpen] = useState(false);
     const [editingTask, setEditingTask] = useState(null);
 
     const openNew = () => {
@@ -163,10 +165,16 @@ const TasksSection = ({ project, canEdit }) => {
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <CardTitle>Tasks</CardTitle>
                 {canEdit && (
-                    <Button size="sm" onClick={openNew}>
-                        <Plus className="h-4 w-4" />
-                        New task
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button size="sm" variant="outline" onClick={() => setAiDialogOpen(true)}>
+                            <Sparkles className="h-4 w-4" />
+                            Generate with AI
+                        </Button>
+                        <Button size="sm" onClick={openNew}>
+                            <Plus className="h-4 w-4" />
+                            New task
+                        </Button>
+                    </div>
                 )}
             </CardHeader>
             <CardContent>
@@ -232,6 +240,12 @@ const TasksSection = ({ project, canEdit }) => {
                 projectId={projectId}
                 project={project}
                 task={editingTask}
+            />
+
+            <AIGenerateTasksDialog
+                open={aiDialogOpen}
+                onOpenChange={setAiDialogOpen}
+                projectId={projectId}
             />
         </Card>
     );

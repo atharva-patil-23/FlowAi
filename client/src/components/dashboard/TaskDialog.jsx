@@ -58,7 +58,6 @@ const TaskDialog = ({ open, onOpenChange, projectId, project, task }) => {
     useEffect(() => {
         if (!open) {
             reset(defaultValues);
-            mutation.reset();
             return;
         }
         if (task) {
@@ -74,7 +73,8 @@ const TaskDialog = ({ open, onOpenChange, projectId, project, task }) => {
         } else {
             reset(defaultValues);
         }
-    }, [open, task, reset, mutation]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, task]);
 
     const assigneeOptions = [
         { value: "", label: "Unassigned" },

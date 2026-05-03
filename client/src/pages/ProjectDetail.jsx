@@ -27,6 +27,7 @@ import {
     useRemoveProjectMember,
 } from "@/hooks/useProjects";
 import { useAuthStore } from "@/store/authStore";
+import { useProjectRealtime } from "@/hooks/useProjectRealtime";
 import TasksSection from "@/components/dashboard/TasksSection";
 
 const initialsOf = (person) => {
@@ -290,6 +291,8 @@ const ProjectDetail = () => {
 
     const { data: project, isLoading, isError, error } = useProject(projectId);
     const deleteMutation = useDeleteProject();
+
+    useProjectRealtime(projectId);
 
     if (isLoading) {
         return (

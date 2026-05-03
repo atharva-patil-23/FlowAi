@@ -1,6 +1,7 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../lib/api";
 import { useAuthStore } from "../store/authStore";
+import { disconnectSocket } from "../lib/socket";
 
 export const useSignup = () => {
     const setAuth = useAuthStore((s) => s.setAuth);
@@ -35,5 +36,10 @@ export const useMe = () => {
 
 export const useLogout = () => {
     const clearAuth = useAuthStore((s) => s.clearAuth);
-    return () => clearAuth();
+    const qc = useQueryClient();
+    return () => {
+        disconnectSocket();
+        clearAuth();
+        qc.clear();
+    };
 };

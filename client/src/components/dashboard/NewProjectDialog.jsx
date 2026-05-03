@@ -30,11 +30,9 @@ const NewProjectDialog = ({ open, onOpenChange, onCreated }) => {
     const createMutation = useCreateProject();
 
     useEffect(() => {
-        if (!open) {
-            reset(defaultValues);
-            createMutation.reset();
-        }
-    }, [open, reset, createMutation]);
+        if (!open) reset(defaultValues);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
 
     const onSubmit = (values) =>
         createMutation.mutate(values, {

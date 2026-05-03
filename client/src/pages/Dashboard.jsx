@@ -1,13 +1,12 @@
 import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 
 import Sidebar from "@/components/dashboard/Sidebar.jsx";
 import TopNavigation from "@/components/dashboard/TopNavigation.jsx";
-import DashboardHome from "@/components/dashboard/DashboardHome.jsx";
-import ProjectDetail from "@/pages/ProjectDetail.jsx";
 
 const Dashboard = () => {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const location = useLocation();
 
     return (
         <div className="flex h-screen w-full bg-background text-foreground">
@@ -17,10 +16,7 @@ const Dashboard = () => {
                 <TopNavigation onToggleSidebar={() => setSidebarCollapsed((v) => !v)} />
 
                 <main className="flex-1 overflow-y-auto p-6">
-                    <Routes>
-                        <Route index element={<DashboardHome />} />
-                        <Route path="projects/:projectId" element={<ProjectDetail />} />
-                    </Routes>
+                    <Outlet key={location.pathname} />
                 </main>
             </div>
         </div>

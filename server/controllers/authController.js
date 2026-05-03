@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.model.js";
 import asyncHandler from "../middleware/asyncHandler.js";
+import { sendWelcome } from "../lib/email.js";
 
 const signToken = (user) =>
     jwt.sign({ id: user._id.toString(), email: user.email }, process.env.JWT_SECRET, {
@@ -19,6 +20,8 @@ export const signup = asyncHandler(async (req, res) => {
 
     const user = await User.create({ username, firstName, lastName, email, password });
     const token = signToken(user);
+
+    sendWelcome(user).catch((err) => console.error("[email] welcome failed:", err.message));
 
     res.status(201).json({
         success: true,

@@ -2,11 +2,17 @@ import Project from "../models/Project.model.js";
 import User from "../models/User.model.js";
 import asyncHandler from "../middleware/asyncHandler.js";
 import { isOwner, canView, canEdit } from "../lib/authz.js";
+import { emitToProject } from "../lib/socket.js";
+import { sendProjectInvite } from "../lib/email.js";
 
 const MEMBER_FIELDS = "firstName lastName username email avatar";
 
-const populateProject = (query) =>
-    query.populate("owner", MEMBER_FIELDS).populate("members.user", MEMBER_FIELDS);
+const PROJECT_POPULATE = [
+    { path: "owner", select: MEMBER_FIELDS },
+    { path: "members.user", select: MEMBER_FIELDS },
+];
+
+const populateProject = (query) => query.populate(PROJECT_POPULATE);
 
 export const listProjects = asyncHandler(async (req, res) => {
     const userId = req.user.id;
@@ -36,8 +42,8 @@ export const createProject = asyncHandler(async (req, res) => {
         visibility: req.body.visibility,
         owner: req.user.id,
     });
-    const project = await populateProject(Project.findById(created._id));
-    res.status(201).json({ success: true, data: { project } });
+    await created.populate(PROJECT_POPULATE);
+    res.status(201).json({ success: true, data: { project: created } });
 });
 
 export const updateProject = asyncHandler(async (req, res) => {
@@ -50,8 +56,9 @@ export const updateProject = asyncHandler(async (req, res) => {
     }
     Object.assign(project, req.body);
     await project.save();
-    const populated = await populateProject(Project.findById(project._id));
-    res.json({ success: true, data: { project: populated } });
+    await project.populate(PROJECT_POPULATE);
+    emitToProject(project._id.toString(), "project:updated", { project });
+    res.json({ success: true, data: { project } });
 });
 
 export const deleteProject = asyncHandler(async (req, res) => {
@@ -64,8 +71,10 @@ export const deleteProject = asyncHandler(async (req, res) => {
             .status(403)
             .json({ success: false, error: { message: "Only the owner can delete this project" } });
     }
+    const projectId = project._id.toString();
     await project.deleteOne();
-    res.json({ success: true, data: { id: project._id } });
+    emitToProject(projectId, "project:deleted", { id: projectId });
+    res.json({ success: true, data: { id: projectId } });
 });
 
 export const addMember = asyncHandler(async (req, res) => {
@@ -96,9 +105,24 @@ export const addMember = asyncHandler(async (req, res) => {
 
     project.members.push({ user: user._id, role: req.body.role });
     await project.save();
+    await project.populate(PROJECT_POPULATE);
 
-    const populated = await populateProject(Project.findById(project._id));
-    res.status(201).json({ success: true, data: { project: populated } });
+    emitToProject(project._id.toString(), "member:added", { project });
+
+    const inviter = project.owner;
+    const inviterName =
+        inviter?.firstName
+            ? `${inviter.firstName} ${inviter.lastName || ""}`.trim()
+            : inviter?.username || "A teammate";
+    const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    sendProjectInvite({
+        to: user.email,
+        inviterName,
+        projectTitle: project.title,
+        link: `${clientUrl}/dashboard/projects/${project._id}`,
+    }).catch((err) => console.error("[email] invite failed:", err.message));
+
+    res.status(201).json({ success: true, data: { project } });
 });
 
 export const removeMember = asyncHandler(async (req, res) => {
@@ -120,7 +144,8 @@ export const removeMember = asyncHandler(async (req, res) => {
         return res.status(404).json({ success: false, error: { message: "Member not found" } });
     }
     await project.save();
+    await project.populate(PROJECT_POPULATE);
 
-    const populated = await populateProject(Project.findById(project._id));
-    res.json({ success: true, data: { project: populated } });
+    emitToProject(project._id.toString(), "member:removed", { project });
+    res.json({ success: true, data: { project } });
 });

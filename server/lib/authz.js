@@ -1,4 +1,9 @@
-const idOf = (v) => (typeof v === "string" ? v : v?.toString());
+const idOf = (v) => {
+    if (v == null) return "";
+    if (typeof v === "string") return v;
+    if (typeof v === "object" && v._id) return v._id.toString();
+    return v.toString();
+};
 
 export const isOwner = (project, userId) => idOf(project.owner) === idOf(userId);
 
