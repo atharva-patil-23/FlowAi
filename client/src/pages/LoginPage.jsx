@@ -24,71 +24,71 @@ const LoginPage = () => {
         });
 
     return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center px-6">
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-red-900/20 via-black to-red-900/10"></div>
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,0,0,0.1),transparent_50%)]"></div>
-            </div>
-
+        <div className="min-h-screen flex items-center justify-center px-6">
             <div className="relative z-10 w-full max-w-md">
                 <Link
                     to="/"
-                    className="inline-flex items-center text-gray-400 hover:text-white transition-colors mb-8"
+                    className="inline-flex items-center text-white/65 hover:text-white transition-colors mb-6"
                 >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to home
                 </Link>
 
-                <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-8">
-                    <h1 className="text-3xl font-bold text-center mb-2">Welcome Back</h1>
-                    <p className="text-gray-400 text-center mb-8">Sign in to your Flow AI account</p>
+                <div className="glass-strong rounded-3xl p-8">
+                    <div className="flex justify-center mb-5">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center shadow-lg shadow-red-500/40 text-white text-xl">
+                            ✦
+                        </div>
+                    </div>
+                    <h1 className="text-3xl font-bold text-center mb-2 text-shadow">Welcome back</h1>
+                    <p className="text-white/70 text-center mb-7">Sign in to your Flow AI account</p>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
                         <div>
-                            <label htmlFor="email" className="block text-sm mb-1">Email</label>
+                            <label htmlFor="email" className="block text-sm mb-1.5 text-white/85">Email</label>
                             <input
                                 id="email"
                                 type="email"
                                 placeholder="you@company.com"
                                 {...register("email")}
-                                className="bg-gray-800/50 border border-gray-700 text-white placeholder-gray-400 focus:border-red-500 focus:outline-none w-full p-2 rounded-md"
+                                className="glass-row w-full rounded-xl px-3 py-2.5 text-[14px] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-red-500/50"
                             />
                             {errors.email && (
-                                <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>
+                                <p className="text-red-300 text-xs mt-1.5">{errors.email.message}</p>
                             )}
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm mb-1">Password</label>
+                            <label htmlFor="password" className="block text-sm mb-1.5 text-white/85">Password</label>
                             <input
                                 id="password"
                                 type="password"
                                 placeholder="Enter your password"
                                 {...register("password")}
-                                className="bg-gray-800/50 border border-gray-700 text-white placeholder-gray-400 focus:border-red-500 focus:outline-none w-full p-2 rounded-md"
+                                className="glass-row w-full rounded-xl px-3 py-2.5 text-[14px] text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-red-500/50"
                             />
                             {errors.password && (
-                                <p className="text-red-400 text-xs mt-1">{errors.password.message}</p>
+                                <p className="text-red-300 text-xs mt-1.5">{errors.password.message}</p>
                             )}
                         </div>
 
                         {loginMutation.isError && (
-                            <p className="text-red-400 text-sm">{loginMutation.error.message}</p>
+                            <p className="text-red-300 text-sm">{loginMutation.error.message}</p>
                         )}
 
                         <button
                             type="submit"
                             disabled={loginMutation.isPending}
-                            className="w-full bg-red-500 hover:bg-red-600 disabled:opacity-60 text-white py-3 rounded-md transition-colors"
+                            className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 disabled:opacity-60 text-white py-3 rounded-xl btn-glow font-medium transition-all"
                         >
-                            {loginMutation.isPending ? "Signing in..." : "Sign In"}
+                            {loginMutation.isPending ? "Signing in..." : "Sign in"}
                         </button>
                     </form>
 
-                    <div className="mt-8 text-center">
-                        <p className="text-gray-400">
+                    <div className="mt-7 text-center">
+                        <p className="text-white/65 text-sm">
                             Don't have an account?{" "}
-                            <Link to="/signup" className="text-red-500 hover:text-red-400 transition-colors">
+                            <Link to="/signup" className="text-red-300 hover:text-red-200 transition-colors">
                                 Sign up
                             </Link>
                         </p>

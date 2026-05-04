@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Loader2, Plus, Pencil, Trash2, Calendar, User as UserIcon, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useTasks, useUpdateTask, useDeleteTask } from "@/hooks/useTasks";
 import TaskDialog from "./TaskDialog";
@@ -15,10 +13,10 @@ const STATUS_COLUMNS = [
     { id: "Completed", label: "Completed" },
 ];
 
-const PRIORITY_VARIANT = {
-    High: "destructive",
-    Medium: "secondary",
-    Low: "outline",
+const PRIORITY_PILL = {
+    High: "bg-red-500/25 text-red-200 border-red-400/40",
+    Medium: "bg-amber-500/20 text-amber-200 border-amber-400/30",
+    Low: "bg-white/10 text-white/70 border-white/15",
 };
 
 const formatDueDate = (iso) => {
@@ -38,61 +36,65 @@ const initialsOf = (person) => {
 
 const TaskCard = ({ task, canEdit, onEdit, onDelete, onStatusChange, updatePending }) => {
     const due = formatDueDate(task.dueDate);
+    const pillClass = PRIORITY_PILL[task.priority] || PRIORITY_PILL.Medium;
 
     return (
-        <div className="space-y-2 rounded-lg border border-border bg-card p-3 shadow-sm">
+        <div className="glass-row rounded-2xl p-3 space-y-2">
             <div className="flex items-start justify-between gap-2">
-                <p className="text-sm font-medium leading-tight">{task.title}</p>
+                <p className="text-sm font-medium leading-tight text-shadow">{task.title}</p>
                 {canEdit && (
                     <div className="flex shrink-0 gap-0.5">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
+                        <button
                             onClick={() => onEdit(task)}
                             aria-label="Edit task"
+                            className="h-6 w-6 rounded-md flex items-center justify-center text-white/65 hover:text-white hover:bg-white/10"
                         >
                             <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
+                        </button>
+                        <button
                             onClick={() => onDelete(task)}
                             aria-label="Delete task"
+                            className="h-6 w-6 rounded-md flex items-center justify-center text-white/65 hover:text-red-300 hover:bg-red-500/15"
                         >
                             <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
+                        </button>
                     </div>
                 )}
             </div>
 
             {task.description && (
-                <p className="line-clamp-2 text-xs text-muted-foreground">{task.description}</p>
+                <p className="line-clamp-2 text-xs text-white/65">{task.description}</p>
             )}
 
-            <div className="flex flex-wrap items-center gap-2">
-                <Badge variant={PRIORITY_VARIANT[task.priority] || "secondary"}>
+            <div className="flex flex-wrap items-center gap-1.5">
+                <span
+                    className={`text-[11px] px-2 py-0.5 rounded-full border ${pillClass}`}
+                >
                     {task.priority}
-                </Badge>
+                </span>
                 {task.tags?.map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs">
+                    <span
+                        key={tag}
+                        className="text-[11px] px-2 py-0.5 rounded-full border border-white/15 text-white/65"
+                    >
                         {tag}
-                    </Badge>
+                    </span>
                 ))}
             </div>
 
-            <div className="flex items-center justify-between gap-2 pt-1 text-xs text-muted-foreground">
+            <div className="flex items-center justify-between gap-2 pt-1 text-xs text-white/65">
                 <div className="flex items-center gap-1.5">
                     {task.assignedTo ? (
                         <>
                             <Avatar className="h-5 w-5">
-                                <AvatarFallback className="text-[10px]">
+                                <AvatarFallback className="bg-gradient-to-br from-red-400 to-rose-500 text-white text-[9px]">
                                     {initialsOf(task.assignedTo)}
                                 </AvatarFallback>
                             </Avatar>
                             <span className="truncate">
-                                {task.assignedTo.firstName || task.assignedTo.username || task.assignedTo.email}
+                                {task.assignedTo.firstName ||
+                                    task.assignedTo.username ||
+                                    task.assignedTo.email}
                             </span>
                         </>
                     ) : (
@@ -115,7 +117,7 @@ const TaskCard = ({ task, canEdit, onEdit, onDelete, onStatusChange, updatePendi
                     value={task.status}
                     onChange={(e) => onStatusChange(task, e.target.value)}
                     disabled={updatePending}
-                    className="flex h-7 w-full rounded-md border border-input bg-transparent px-2 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    className="glass-row mt-2 w-full h-7 rounded-md px-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-red-500/40"
                 >
                     <option value="Todo">To do</option>
                     <option value="Inprogress">In progress</option>
@@ -161,78 +163,83 @@ const TasksSection = ({ project, canEdit }) => {
     }));
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                <CardTitle>Tasks</CardTitle>
+        <div className="glass rounded-3xl p-6">
+            <div className="flex items-center justify-between mb-5">
+                <h2 className="text-[18px] font-semibold text-shadow">Tasks</h2>
                 {canEdit && (
                     <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={() => setAiDialogOpen(true)}>
-                            <Sparkles className="h-4 w-4" />
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setAiDialogOpen(true)}
+                            className="glass border-white/15 text-white hover:bg-white/10"
+                        >
+                            <Sparkles className="h-4 w-4 text-red-300" />
                             Generate with AI
                         </Button>
-                        <Button size="sm" onClick={openNew}>
+                        <button
+                            onClick={openNew}
+                            className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white text-[13px] font-medium px-3 py-1.5 rounded-lg btn-glow flex items-center gap-1.5"
+                        >
                             <Plus className="h-4 w-4" />
                             New task
-                        </Button>
+                        </button>
                     </div>
                 )}
-            </CardHeader>
-            <CardContent>
-                {isLoading && (
-                    <div className="flex items-center justify-center py-8 text-muted-foreground">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                    </div>
-                )}
+            </div>
 
-                {isError && (
-                    <p className="text-sm text-destructive">{error.message}</p>
-                )}
+            {isLoading && (
+                <div className="flex items-center justify-center py-10 text-white/55">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                </div>
+            )}
 
-                {!isLoading && !isError && tasks.length === 0 && (
-                    <p className="py-8 text-center text-sm text-muted-foreground">
-                        No tasks yet. {canEdit ? "Click \"New task\" to add one." : ""}
-                    </p>
-                )}
+            {isError && <p className="text-sm text-red-300">{error.message}</p>}
 
-                {!isLoading && tasks.length > 0 && (
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                        {grouped.map((col) => (
-                            <div key={col.id} className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                        {col.label}
-                                    </h3>
-                                    <span className="text-xs text-muted-foreground">
-                                        {col.tasks.length}
-                                    </span>
-                                </div>
-                                <div className="space-y-2">
-                                    {col.tasks.map((task) => (
-                                        <TaskCard
-                                            key={task._id || task.id}
-                                            task={task}
-                                            canEdit={canEdit}
-                                            onEdit={openEdit}
-                                            onDelete={handleDelete}
-                                            onStatusChange={handleStatusChange}
-                                            updatePending={updateMutation.isPending}
-                                        />
-                                    ))}
-                                    {col.tasks.length === 0 && (
-                                        <p className="rounded-md border border-dashed border-border py-4 text-center text-xs text-muted-foreground">
-                                            Empty
-                                        </p>
-                                    )}
-                                </div>
+            {!isLoading && !isError && tasks.length === 0 && (
+                <p className="py-10 text-center text-sm text-white/55">
+                    No tasks yet. {canEdit ? 'Click "New task" to add one.' : ""}
+                </p>
+            )}
+
+            {!isLoading && tasks.length > 0 && (
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    {grouped.map((col) => (
+                        <div key={col.id} className="glass-row rounded-2xl p-3 space-y-2">
+                            <div className="flex items-center justify-between px-1">
+                                <h3 className="text-[11px] font-semibold uppercase tracking-wider text-white/55">
+                                    {col.label}
+                                </h3>
+                                <span className="text-[11px] text-white/55">
+                                    {col.tasks.length}
+                                </span>
                             </div>
-                        ))}
-                    </div>
-                )}
+                            <div className="space-y-2">
+                                {col.tasks.map((task) => (
+                                    <TaskCard
+                                        key={task._id || task.id}
+                                        task={task}
+                                        canEdit={canEdit}
+                                        onEdit={openEdit}
+                                        onDelete={handleDelete}
+                                        onStatusChange={handleStatusChange}
+                                        updatePending={updateMutation.isPending}
+                                    />
+                                ))}
+                                {col.tasks.length === 0 && (
+                                    <p className="rounded-md border border-dashed border-white/15 py-4 text-center text-xs text-white/45">
+                                        Empty
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
 
-                {deleteMutation.isError && (
-                    <p className="mt-3 text-sm text-destructive">{deleteMutation.error.message}</p>
-                )}
-            </CardContent>
+            {deleteMutation.isError && (
+                <p className="mt-3 text-sm text-red-300">{deleteMutation.error.message}</p>
+            )}
 
             <TaskDialog
                 open={dialogOpen}
@@ -247,7 +254,7 @@ const TasksSection = ({ project, canEdit }) => {
                 onOpenChange={setAiDialogOpen}
                 projectId={projectId}
             />
-        </Card>
+        </div>
     );
 };
 

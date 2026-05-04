@@ -1,51 +1,27 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.141 0.005 285.823);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.141 0.005 285.823);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.141 0.005 285.823);
-    --primary: oklch(0.637 0.237 25.331);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.967 0.001 286.375);
-    --secondary-foreground: oklch(0.21 0.006 285.885);
-    --muted: oklch(0.967 0.001 286.375);
-    --muted-foreground: oklch(0.552 0.016 285.938);
-    --accent: oklch(0.967 0.001 286.375);
-    --accent-foreground: oklch(0.21 0.006 285.885);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.985 0 0);
-    --border: oklch(0.92 0.004 286.32);
-    --input: oklch(0.92 0.004 286.32);
-    --ring: oklch(0.637 0.237 25.331);
-    --radius: 0.625rem;
-}
-
-.dark {
-    --background: oklch(0.141 0.005 285.823);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.21 0.006 285.885);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.21 0.006 285.885);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.637 0.237 25.331);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.274 0.006 286.033);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.274 0.006 286.033);
-    --muted-foreground: oklch(0.705 0.015 286.067);
-    --accent: oklch(0.274 0.006 286.033);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --destructive-foreground: oklch(0.985 0 0);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.637 0.237 25.331);
+    --background: #050000;
+    --foreground: #ffffff;
+    --card: rgba(255, 255, 255, 0.06);
+    --card-foreground: #ffffff;
+    --popover: rgba(20, 5, 5, 0.78);
+    --popover-foreground: #ffffff;
+    --primary: #ef4444;
+    --primary-foreground: #ffffff;
+    --secondary: rgba(255, 255, 255, 0.10);
+    --secondary-foreground: #ffffff;
+    --muted: rgba(255, 255, 255, 0.05);
+    --muted-foreground: rgba(255, 255, 255, 0.65);
+    --accent: rgba(255, 255, 255, 0.10);
+    --accent-foreground: #ffffff;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --border: rgba(255, 255, 255, 0.15);
+    --input: rgba(255, 255, 255, 0.18);
+    --ring: #ef4444;
+    --radius: 0.875rem;
 }
 
 @theme inline {
@@ -75,15 +51,94 @@
 }
 
 @layer base {
-    * {
-        border-color: var(--border);
+    * { border-color: var(--border); }
+    html, body {
+        color: var(--foreground);
+        min-height: 100vh;
     }
     body {
-        background-color: var(--background);
-        color: var(--foreground);
+        background-color: #050000;
+        background-image:
+            radial-gradient(at 12% 20%, hsla(0, 80%, 38%, 0.55) 0px, transparent 55%),
+            radial-gradient(at 85% 18%, hsla(0, 90%, 50%, 0.45) 0px, transparent 50%),
+            radial-gradient(at 78% 88%, hsla(0, 75%, 28%, 0.65) 0px, transparent 60%),
+            radial-gradient(at 18% 82%, hsla(0, 95%, 45%, 0.30) 0px, transparent 55%),
+            linear-gradient(180deg, #050000 0%, #0a0000 100%);
+        background-attachment: fixed;
     }
 }
 
-::-webkit-scrollbar {
-    display: none;
+/* Glassmorphism utilities */
+.glass {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.10);
 }
+.glass-strong {
+    background: rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(32px) saturate(160%);
+    -webkit-backdrop-filter: blur(32px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+.glass-row {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background 0.15s, border-color 0.15s;
+}
+.glass-row:hover {
+    background: rgba(255, 255, 255, 0.10);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+.text-shadow { text-shadow: 0 1px 16px rgba(0, 0, 0, 0.20); }
+
+/* Make shadcn Card glass by default */
+[data-slot="card"] {
+    background: rgba(255, 255, 255, 0.06) !important;
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Glass dialog content (Radix portal) */
+[role="dialog"][data-state] {
+    background: rgba(20, 5, 5, 0.55) !important;
+    backdrop-filter: blur(40px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(160%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.20) !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Dropdown menus get same glass treatment */
+[data-radix-popper-content-wrapper] [role="menu"] {
+    background: rgba(20, 5, 5, 0.78) !important;
+    backdrop-filter: blur(32px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(160%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+/* Inputs and textareas get a subtle glass tint */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+}
+input:focus, textarea:focus, select:focus {
+    background-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Red glow on primary buttons */
+.btn-glow {
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.20);
+}
+
+/* Thin glass scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.10); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.20); }
