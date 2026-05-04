@@ -44,16 +44,22 @@ const LandingPage = () => {
                     </div>
                     <nav className="hidden md:flex items-center gap-7 text-[13.5px] text-white/80">
                         <a href="#features" className="hover:text-white">Features</a>
-                        <a href="#" className="hover:text-white">AI</a>
-                        <a href="#" className="hover:text-white">Pricing</a>
                         <button onClick={goLogin} className="hover:text-white">Sign in</button>
                     </nav>
-                    <button
-                        onClick={goSignup}
-                        className="text-[13px] glass-strong px-4 py-1.5 rounded-full hover:bg-white/15"
-                    >
-                        Start with AI
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={goLogin}
+                            className="md:hidden text-[13px] px-3 py-1.5 text-white/85 hover:text-white"
+                        >
+                            Sign in
+                        </button>
+                        <button
+                            onClick={goSignup}
+                            className="text-[13px] glass-strong px-4 py-1.5 rounded-full hover:bg-white/15"
+                        >
+                            Start with AI
+                        </button>
+                    </div>
                 </div>
             </header>
 
